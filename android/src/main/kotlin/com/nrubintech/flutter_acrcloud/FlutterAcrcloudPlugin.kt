@@ -7,10 +7,10 @@ import android.content.pm.PackageManager
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.acrcloud.rec.ACRCloudClient
-import com.acrcloud.rec.ACRCloudConfig
-import com.acrcloud.rec.ACRCloudResult
-import com.acrcloud.rec.IACRCloudListener
+import com.acrcloud.rec.sdk.ACRCloudClient
+import com.acrcloud.rec.sdk.ACRCloudConfig
+import com.acrcloud.rec.sdk.ACRCloudResult
+import com.acrcloud.rec.sdk.IACRCloudListener
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -96,16 +96,14 @@ class FlutterAcrcloudPlugin: FlutterPlugin, MethodCallHandler, PluginRegistry.Re
     config.accessKey = call.argument("accessKey")
     config.accessSecret = call.argument("accessSecret")
     config.host = call.argument("host")
+    config.dbPath = call.argument("dbPath")
 
-    config.recorderConfig.rate = 8000
-    config.recorderConfig.channels = 1
-    config.recorderConfig.isVolumeCallback = true
-    config.protocol = ACRCloudConfig.NetworkProtocol.HTTPS
+    config.protocol = ACRCloudConfig.ACRCloudNetworkProtocol.PROTOCOL_HTTPS
+    config.reqMode = ACRCloudConfig.ACRCloudRecMode.REC_MODE_LOCAL
 
     client = ACRCloudClient()
-    client.initWithConfig(config)
-
-    result.success(true)
+    val initState = client.initWithConfig(config)
+    result.success(initState)
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

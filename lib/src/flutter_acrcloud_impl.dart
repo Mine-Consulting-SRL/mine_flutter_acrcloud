@@ -11,8 +11,14 @@ class ACRCloudConfig {
   final String accessKey;
   final String accessSecret;
   final String host;
+  final String dbPath;
 
-  const ACRCloudConfig(this.accessKey, this.accessSecret, this.host);
+  const ACRCloudConfig(
+    this.accessKey,
+    this.accessSecret,
+    this.host,
+    this.dbPath,
+  );
 }
 
 /// A recording session.
@@ -71,15 +77,17 @@ class ACRCloud {
       if (call.method == 'volume') {
         _session?._volume.add(call.arguments);
       } else if (call.method == 'result') {
-        _session?._result
-            .complete(ACRCloudResponse.fromJson(json.decode(call.arguments)));
+        _session?._result.complete(
+          ACRCloudResponse.fromJson(json.decode(call.arguments)),
+        );
       }
     });
 
     await _channel.invokeMethod('setUp', {
       'accessKey': config.accessKey,
       'accessSecret': config.accessSecret,
-      'host': config.host
+      'host': config.host,
+      'dbPath': config.dbPath,
     });
 
     _isSetUp = true;
@@ -92,7 +100,8 @@ class ACRCloud {
   static ACRCloudSession startSession() {
     if (!_isSetUp) {
       throw StateError(
-          'ACRCloud is not set up! You forgot to call ACRCloud.setUp()');
+        'ACRCloud is not set up! You forgot to call ACRCloud.setUp()',
+      );
     }
 
     _session?.dispose();
