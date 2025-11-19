@@ -20,6 +20,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
+import org.json.JSONArray
+import org.json.JSONObject
 
 /** FlutterAcrcloudPlugin */
 class FlutterAcrcloudPlugin: FlutterPlugin, MethodCallHandler, PluginRegistry.RequestPermissionsResultListener, ActivityAware {
@@ -111,10 +113,27 @@ class FlutterAcrcloudPlugin: FlutterPlugin, MethodCallHandler, PluginRegistry.Re
   }
 
   private inner class ACRListener : IACRCloudListener {
-    override fun onResult(result: ACRCloudResult?) {
+    override fun onResult(result: String?) {
       client.stopRecordToRecognize()
       isListening = false
-      channel.invokeMethod("result", result?.result)
+      channel.invokeMethod("result", result)
+      /*result?.let { result ->
+        val j = JSONObject(result)
+        val j1 = j.getJSONObject("status")
+        val j2 = j1.getInt("code")
+
+        if (j2 == 0) {
+          val metadata = j.getJSONObject("metadata")
+          if (metadata.has("music")) {
+            val musics = metadata.getJSONArray("music")
+            for (i in 0 until musics.length()) {
+              val tt = musics.get(i) as JSONObject
+              val title = tt.getString("title")
+            }
+          }
+        }
+      }*/
+
     }
 
     override fun onVolumeChanged(volume: Double) {
